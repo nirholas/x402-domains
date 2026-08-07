@@ -29,7 +29,9 @@ SOLANA_PAY_TO_ADDRESS=WwwuGbqHrwF5RG89KhUbmRWEvjnRH9k5kVM5p7T3WwW
 
 Change both to your own addresses if you want the money. Everything else is commented out
 and has a sane default: `base-sepolia` for the EVM rail, `solana` mainnet for the Solana
-rail, `https://x402.org/facilitator` for settlement, port `4021`.
+rail, `https://x402.org/facilitator` for EVM settlement, `https://facilitator.payai.network`
+for Solana settlement (the reference x402.org facilitator only settles Base Sepolia), and
+port `4021`.
 
 There is no API key to obtain. RDAP is keyless and public — that is the whole point of
 this service.
@@ -43,9 +45,8 @@ npm run dev
 ```
 x402-domains listening on http://localhost:4021
 Payment rails (USDC — the client picks):
-  evm     base-sepolia   → 0x40252CFDF8B20Ed757D61ff157719F33Ec332402
-  solana  solana         → WwwuGbqHrwF5RG89KhUbmRWEvjnRH9k5kVM5p7T3WwW
-  facilitator: https://x402.org/facilitator
+  evm     base-sepolia   → 0x40252CFDF8B20Ed757D61ff157719F33Ec332402  via https://x402.org/facilitator
+  solana  solana         → WwwuGbqHrwF5RG89KhUbmRWEvjnRH9k5kVM5p7T3WwW  via https://facilitator.payai.network
   note: using suite default payTo — set PAY_TO_ADDRESS / SOLANA_PAY_TO_ADDRESS to receive funds yourself
 Paid routes:
   GET /check/:domain       $0.001
@@ -81,8 +82,7 @@ HTTP/1.1 402 Payment Required
     { "scheme": "exact", "network": "solana", "maxAmountRequired": "1000",
       "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
       "payTo": "WwwuGbqHrwF5RG89KhUbmRWEvjnRH9k5kVM5p7T3WwW", … }
-  ],
-  "hint": "Pay in USDC on Base or Solana — your client picks the rail."
+  ]
 }
 ```
 

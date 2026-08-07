@@ -6,7 +6,7 @@
   "skill": "/skill.md",
   "openapi": "/openapi.json",
   "contact": "nichxbt@gmail.com",
-  "facilitator": "https://x402.org/facilitator",
+  "facilitator": { "evm": "https://x402.org/facilitator", "solana": "https://facilitator.payai.network" },
   "rails": [
     {
       "rail": "evm",

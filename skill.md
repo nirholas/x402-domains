@@ -37,7 +37,9 @@ and USDC on Solana. Your client picks whichever it can sign.**
 - **Protocol:** x402 v1, scheme `exact`
 - **Asset:** USDC (6 decimals) on both rails
 - **Networks:** `base-sepolia` (default) or `base`; `solana` (default) or `solana-devnet`
-- **Facilitator:** `https://x402.org/facilitator` — verifies and settles both rails
+- **Facilitators:** `https://x402.org/facilitator` (EVM rail) and
+  `https://facilitator.payai.network` (Solana rail) — both override-able via
+  `FACILITATOR_URL` / `SOLANA_FACILITATOR_URL`
 - **How to pay:** any x402 client. `x402-fetch` + `viem` for the EVM rail, or any Solana
   x402 client / the `@three-ws/x402-payment-modal` checkout for the Solana rail. Sign the
   requirement you chose, base64 it into the `X-PAYMENT` header, retry the request.

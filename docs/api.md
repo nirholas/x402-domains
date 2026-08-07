@@ -182,9 +182,7 @@ Lookups run 8 at a time.
 {
   "x402Version": 1,
   "error": "X-PAYMENT header is required",
-  "accepts": [ /* one PaymentRequirements per rail */ ],
-  "payer": null,
-  "hint": "Pay in USDC on Base or Solana — your client picks the rail. See /.well-known/x402"
+  "accepts": [ /* one PaymentRequirements per rail */ ]
 }
 ```
 
@@ -199,7 +197,7 @@ Lookups run 8 at a time.
 | `description` | `"Live RDAP lookup for one domain…"` | shown by wallets and the checkout modal |
 | `mimeType` | `"application/json"` | what the 200 will be |
 | `payTo` | `0x40252CF…` / `WwwuGbqH…` | receive address for that rail |
-| `maxTimeoutSeconds` | `120` | how long the authorisation stays valid |
+| `maxTimeoutSeconds` | `60` | how long the authorisation stays valid |
 | `asset` | USDC address / SPL mint | the token you pay in |
 | `extra` | `{ name, version }` / `{ name, decimals, feePayer }` | EIP-712 domain on EVM; the fee sponsor on Solana |
 
@@ -224,7 +222,7 @@ Successful responses set `X-PAYMENT-RESPONSE` to base64 JSON, and repeat it as `
 | `error` | meaning |
 |---|---|
 | `X-PAYMENT header is required` | first, unpaid attempt — normal |
-| `invalid X-PAYMENT header — expected base64 x402 payload` | not base64, or not an x402 payload |
-| `unsupported network "…"` | you signed on a rail this server does not take |
+| `invalid X-PAYMENT header: …` | not base64, or not an x402 payload |
+| `unsupported rail: this endpoint does not accept exact on <network>` | you signed on a rail this server does not take |
 | `insufficient_funds`, `payment_expired`, `invalid_exact_evm_payload_signature`, … | the facilitator's `invalidReason`, passed through verbatim |
-| `facilitator error: …` | the facilitator was unreachable — retry |
+| — | a facilitator outage answers `502 facilitator_unreachable` / `502 settlement_error` instead of 402 |

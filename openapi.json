@@ -190,7 +190,7 @@
                   "description": "Live RDAP lookup for one domain",
                   "mimeType": "application/json",
                   "payTo": "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
-                  "maxTimeoutSeconds": 120,
+                  "maxTimeoutSeconds": 60,
                   "asset": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
                   "extra": { "name": "USDC", "version": "2" }
                 },
@@ -202,12 +202,11 @@
                   "description": "Live RDAP lookup for one domain",
                   "mimeType": "application/json",
                   "payTo": "WwwuGbqHrwF5RG89KhUbmRWEvjnRH9k5kVM5p7T3WwW",
-                  "maxTimeoutSeconds": 120,
+                  "maxTimeoutSeconds": 60,
                   "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
-                  "extra": { "name": "USDC", "decimals": 6, "feePayer": "CKPKJWNdJEqa81x7CkZ14BVPiY6y16Sxs7owznqtWYp5" }
+                  "extra": { "name": "USD Coin", "decimals": 6, "feePayer": "2wKupLR9q6wXYppw8Gr2NvWxKBUqm4PPJKkQfoxHDBg4" }
                 }
-              ],
-              "hint": "Pay in USDC on Base or Solana — your client picks the rail. See /.well-known/x402"
+              ]
             }
           }
         }
@@ -279,8 +278,7 @@
             "minItems": 1,
             "items": { "$ref": "#/components/schemas/PaymentRequirements" }
           },
-          "payer": { "type": ["string", "null"] },
-          "hint": { "type": "string" }
+          "payer": { "type": ["string", "null"] }
         }
       },
       "DomainCheck": {

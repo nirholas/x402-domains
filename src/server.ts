@@ -4,8 +4,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   paywall,
-  rails,
-  facilitatorUrl,
+  activeRails,
   usingSuiteDefaultPayTo,
   paymentReceipt,
   type RoutePrices,
@@ -17,38 +16,14 @@ const ROOT = path.join(__dirname, "..");
 const PORT = Number(process.env.PORT || 4021);
 
 const PAID_ROUTES: RoutePrices = {
-  "GET /check/:domain": {
-    price: "$0.001",
-    description:
-      "Live RDAP lookup for one domain: availability, registrar, creation/expiry dates, nameservers, DNSSEC",
-    outputSchema: {
-      type: "object",
-      required: ["domain", "status", "available", "checkedAt"],
-      properties: {
-        domain: { type: "string" },
-        status: { type: "string", enum: ["registered", "available", "unknown"] },
-        available: { type: ["boolean", "null"] },
-        registrar: { type: ["string", "null"] },
-        expiresAt: { type: ["string", "null"], format: "date-time" },
-        nameservers: { type: "array", items: { type: "string" } },
-      },
-    },
-  },
-  "POST /bulk": {
-    price: "$0.005",
-    description: "Live RDAP lookup for up to 50 domains in one paid call",
-    outputSchema: {
-      type: "object",
-      required: ["count", "results"],
-      properties: {
-        count: { type: "integer" },
-        registered: { type: "integer" },
-        available: { type: "integer" },
-        unknown: { type: "integer" },
-        results: { type: "array", items: { type: "object" } },
-      },
-    },
-  },
+  "GET /check/:domain": "$0.001",
+  "POST /bulk": "$0.005",
+};
+
+const DESCRIPTIONS: Record<string, string> = {
+  "GET /check/:domain":
+    "Live RDAP lookup for one domain: availability, registrar, creation/expiry dates, nameservers, DNSSEC",
+  "POST /bulk": "Live RDAP lookup for up to 50 domains in one paid call",
 };
 
 const PRICE_TABLE = [
@@ -73,8 +48,7 @@ app.get("/", (_req, res) => {
     payment: {
       protocol: "x402",
       note: "Pay in USDC on Base or Solana — your client picks the rail.",
-      rails: rails(),
-      facilitator: facilitatorUrl(),
+      rails: activeRails(),
     },
     endpoints: PRICE_TABLE,
   });
@@ -90,7 +64,7 @@ app.get("/openapi.json", (_req, res) => res.sendFile(path.join(ROOT, "openapi.js
 app.use(express.static(path.join(ROOT, "public")));
 
 // ---- paywall: everything below this line costs USDC ----
-app.use(paywall(PAID_ROUTES, { service: "x402-domains" }));
+app.use(paywall(PAID_ROUTES, { service: "x402-domains", descriptions: DESCRIPTIONS }));
 
 app.get("/check/:domain", async (req, res) => {
   try {
@@ -137,10 +111,9 @@ app.post("/bulk", async (req, res) => {
 app.listen(PORT, () => {
   console.log(`\nx402-domains listening on http://localhost:${PORT}`);
   console.log("Payment rails (USDC — the client picks):");
-  for (const r of rails()) {
-    console.log(`  ${r.rail.padEnd(7)} ${r.network.padEnd(14)} → ${r.payTo}`);
+  for (const r of activeRails()) {
+    console.log(`  ${r.rail.padEnd(7)} ${r.network.padEnd(14)} → ${r.payTo}  via ${r.facilitator}`);
   }
-  console.log(`  facilitator: ${facilitatorUrl()}`);
   if (usingSuiteDefaultPayTo()) {
     console.log(
       "  note: using suite default payTo — set PAY_TO_ADDRESS / SOLANA_PAY_TO_ADDRESS to receive funds yourself",

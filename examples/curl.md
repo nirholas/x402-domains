@@ -44,7 +44,7 @@ Content-Type: application/json
       "description": "Live RDAP lookup for one domain: …",
       "mimeType": "application/json",
       "payTo": "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
-      "maxTimeoutSeconds": 120,
+      "maxTimeoutSeconds": 60,
       "asset": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
       "extra": { "name": "USDC", "version": "2" }
     },
@@ -56,12 +56,11 @@ Content-Type: application/json
       "description": "Live RDAP lookup for one domain: …",
       "mimeType": "application/json",
       "payTo": "WwwuGbqHrwF5RG89KhUbmRWEvjnRH9k5kVM5p7T3WwW",
-      "maxTimeoutSeconds": 120,
+      "maxTimeoutSeconds": 60,
       "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
-      "extra": { "name": "USDC", "decimals": 6, "feePayer": "CKPKJWNdJEqa81x7CkZ14BVPiY6y16Sxs7owznqtWYp5" }
+      "extra": { "name": "USD Coin", "decimals": 6, "feePayer": "2wKupLR9q6wXYppw8Gr2NvWxKBUqm4PPJKkQfoxHDBg4" }
     }
-  ],
-  "hint": "Pay in USDC on Base or Solana — your client picks the rail. See /.well-known/x402"
+  ]
 }
 ```
 
@@ -178,8 +177,8 @@ payment — get the challenge from an unpaid `POST /bulk` first.
 | what you sent | you get |
 |---|---|
 | no header | 402, `error: "X-PAYMENT header is required"` |
-| garbage header | 402, `error: "invalid X-PAYMENT header — expected base64 x402 payload"` |
-| a rail we don't take | 402, `error: "unsupported network \"…\""` |
+| garbage header | 402, `error: "invalid X-PAYMENT header: …"` |
+| a rail we don't take | 402, `error: "unsupported rail: …"` |
 | an expired or short-paid authorisation | 402, `error:` the facilitator's `invalidReason` |
 | `/check/not a domain` | 400, `INVALID_DOMAIN` |
 | `/bulk` with 51 domains | 400, `TOO_MANY_DOMAINS` |
