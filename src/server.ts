@@ -9,6 +9,7 @@ import {
   paymentReceipt,
   type RoutePrices,
 } from "./payments.js";
+import { ROUTE_SCHEMAS } from "./schemas.js";
 import { checkDomain, checkBulk, DomainError } from "./service.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -64,7 +65,7 @@ app.get("/openapi.json", (_req, res) => res.sendFile(path.join(ROOT, "openapi.js
 app.use(express.static(path.join(ROOT, "public")));
 
 // ---- paywall: everything below this line costs USDC ----
-app.use(paywall(PAID_ROUTES, { service: "x402-domains", descriptions: DESCRIPTIONS }));
+app.use(paywall(PAID_ROUTES, { service: "x402-domains", descriptions: DESCRIPTIONS, schemas: ROUTE_SCHEMAS }));
 
 app.get("/check/:domain", async (req, res) => {
   try {

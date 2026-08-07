@@ -41,7 +41,8 @@
               }
             }
           }
-        }
+        },
+        "security": []
       }
     },
     "/health": {
@@ -67,7 +68,8 @@
               }
             }
           }
-        }
+        },
+        "security": []
       }
     },
     "/.well-known/x402": {
@@ -85,7 +87,8 @@
               }
             }
           }
-        }
+        },
+        "security": []
       }
     },
     "/check/{domain}": {
