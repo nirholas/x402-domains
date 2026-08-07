@@ -5,11 +5,21 @@
     "version": "0.1.0",
     "summary": "Authoritative domain availability and expiry intel via RDAP, paid per lookup over x402.",
     "description": "Live RDAP (RFC 9082/9083) domain intelligence. Paid routes speak x402: an unpaid request returns 402 with a dual-rail `accepts` array (USDC on Base and USDC on Solana) and the client picks the rail.",
-    "contact": { "name": "nirholas", "email": "nichxbt@gmail.com" },
-    "license": { "name": "Apache-2.0", "identifier": "Apache-2.0" }
+    "contact": {
+      "name": "nirholas",
+      "email": "nichxbt@gmail.com"
+    },
+    "license": {
+      "name": "Apache-2.0",
+      "identifier": "Apache-2.0"
+    },
+    "x-guidance": "Authoritative domain availability and expiry intel via RDAP — keyless, live, per lookup. Every paid route answers an unpaid request with HTTP 402 and a list of accepted payments (USDC on Base or Solana — pick either), then returns the purchased artifact in the body of the same request once you retry with an X-PAYMENT header. Payment and delivery happen in one round trip; nothing is promised for later. GET /check/:domain ($0.001) returns availability, registrar, expiry, nameservers POST /bulk ($0.005) returns up to 50 domains checked"
   },
   "servers": [
-    { "url": "http://localhost:4026", "description": "local self-host" }
+    {
+      "url": "http://localhost:4026",
+      "description": "local self-host"
+    }
   ],
   "externalDocs": {
     "description": "Docs and tutorial",
@@ -23,7 +33,13 @@
         "responses": {
           "200": {
             "description": "Name, prices, payment rails and doc links.",
-            "content": { "application/json": { "schema": { "type": "object" } } }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
           }
         }
       }
@@ -39,7 +55,14 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "properties": { "ok": { "type": "boolean" }, "uptime": { "type": "number" } }
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    },
+                    "uptime": {
+                      "type": "number"
+                    }
+                  }
                 }
               }
             }
@@ -54,7 +77,13 @@
         "responses": {
           "200": {
             "description": "Machine-readable listing of paid resources, prices and rails.",
-            "content": { "application/json": { "schema": { "type": "object" } } }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
           }
         }
       }
@@ -70,7 +99,12 @@
             "in": "path",
             "required": true,
             "description": "Registrable domain name. IDNs must be punycode.",
-            "schema": { "type": "string", "examples": ["example.com"] }
+            "schema": {
+              "type": "string",
+              "examples": [
+                "example.com"
+              ]
+            }
           }
         ],
         "responses": {
@@ -79,12 +113,16 @@
             "headers": {
               "X-PAYMENT-RESPONSE": {
                 "description": "Base64 JSON settlement receipt.",
-                "schema": { "type": "string" }
+                "schema": {
+                  "type": "string"
+                }
               }
             },
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/DomainCheck" },
+                "schema": {
+                  "$ref": "#/components/schemas/DomainCheck"
+                },
                 "example": {
                   "domain": "example.com",
                   "status": "registered",
@@ -94,8 +132,13 @@
                   "createdAt": "1995-08-14T04:00:00Z",
                   "updatedAt": "2026-01-16T18:26:50Z",
                   "expiresAt": "2026-08-13T04:00:00Z",
-                  "nameservers": ["elliott.ns.cloudflare.com", "hera.ns.cloudflare.com"],
-                  "statusFlags": ["client delete prohibited"],
+                  "nameservers": [
+                    "elliott.ns.cloudflare.com",
+                    "hera.ns.cloudflare.com"
+                  ],
+                  "statusFlags": [
+                    "client delete prohibited"
+                  ],
                   "dnssecSigned": true,
                   "rdapServer": "https://rdap.verisign.com/com/v1/domain/example.com",
                   "source": "rdap",
@@ -104,9 +147,27 @@
               }
             }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "402": { "$ref": "#/components/responses/PaymentRequired" },
-          "502": { "$ref": "#/components/responses/UpstreamError" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "402": {
+            "$ref": "#/components/responses/PaymentRequired"
+          },
+          "502": {
+            "$ref": "#/components/responses/UpstreamError"
+          }
+        },
+        "x-payment-info": {
+          "price": {
+            "mode": "fixed",
+            "currency": "USD",
+            "amount": "0.001000"
+          },
+          "protocols": [
+            {
+              "x402": {}
+            }
+          ]
         }
       }
     },
@@ -121,17 +182,26 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["domains"],
+                "required": [
+                  "domains"
+                ],
                 "properties": {
                   "domains": {
                     "type": "array",
                     "minItems": 1,
                     "maxItems": 50,
-                    "items": { "type": "string" }
+                    "items": {
+                      "type": "string"
+                    }
                   }
                 }
               },
-              "example": { "domains": ["example.com", "openai.com"] }
+              "example": {
+                "domains": [
+                  "example.com",
+                  "openai.com"
+                ]
+              }
             }
           }
         },
@@ -141,32 +211,69 @@
             "headers": {
               "X-PAYMENT-RESPONSE": {
                 "description": "Base64 JSON settlement receipt.",
-                "schema": { "type": "string" }
+                "schema": {
+                  "type": "string"
+                }
               }
             },
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["count", "results", "checkedAt"],
+                  "required": [
+                    "count",
+                    "results",
+                    "checkedAt"
+                  ],
                   "properties": {
-                    "count": { "type": "integer" },
-                    "registered": { "type": "integer" },
-                    "available": { "type": "integer" },
-                    "unknown": { "type": "integer" },
+                    "count": {
+                      "type": "integer"
+                    },
+                    "registered": {
+                      "type": "integer"
+                    },
+                    "available": {
+                      "type": "integer"
+                    },
+                    "unknown": {
+                      "type": "integer"
+                    },
                     "results": {
                       "type": "array",
-                      "items": { "$ref": "#/components/schemas/DomainCheck" }
+                      "items": {
+                        "$ref": "#/components/schemas/DomainCheck"
+                      }
                     },
-                    "checkedAt": { "type": "string", "format": "date-time" }
+                    "checkedAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
                   }
                 }
               }
             }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "402": { "$ref": "#/components/responses/PaymentRequired" },
-          "502": { "$ref": "#/components/responses/UpstreamError" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "402": {
+            "$ref": "#/components/responses/PaymentRequired"
+          },
+          "502": {
+            "$ref": "#/components/responses/UpstreamError"
+          }
+        },
+        "x-payment-info": {
+          "price": {
+            "mode": "fixed",
+            "currency": "USD",
+            "amount": "0.005000"
+          },
+          "protocols": [
+            {
+              "x402": {}
+            }
+          ]
         }
       }
     }
@@ -177,7 +284,9 @@
         "description": "Payment required. The `accepts` array lists both rails — USDC on Base and USDC on Solana. Sign one, base64 it into `X-PAYMENT`, retry.",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/PaymentRequiredBody" },
+            "schema": {
+              "$ref": "#/components/schemas/PaymentRequiredBody"
+            },
             "example": {
               "x402Version": 1,
               "error": "X-PAYMENT header is required",
@@ -192,7 +301,10 @@
                   "payTo": "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
                   "maxTimeoutSeconds": 60,
                   "asset": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
-                  "extra": { "name": "USDC", "version": "2" }
+                  "extra": {
+                    "name": "USDC",
+                    "version": "2"
+                  }
                 },
                 {
                   "scheme": "exact",
@@ -204,7 +316,11 @@
                   "payTo": "WwwuGbqHrwF5RG89KhUbmRWEvjnRH9k5kVM5p7T3WwW",
                   "maxTimeoutSeconds": 60,
                   "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
-                  "extra": { "name": "USD Coin", "decimals": 6, "feePayer": "2wKupLR9q6wXYppw8Gr2NvWxKBUqm4PPJKkQfoxHDBg4" }
+                  "extra": {
+                    "name": "USD Coin",
+                    "decimals": 6,
+                    "feePayer": "2wKupLR9q6wXYppw8Gr2NvWxKBUqm4PPJKkQfoxHDBg4"
+                  }
                 }
               ]
             }
@@ -214,23 +330,37 @@
       "BadRequest": {
         "description": "Malformed input.",
         "content": {
-          "application/json": { "schema": { "$ref": "#/components/schemas/Error" } }
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
         }
       },
       "UpstreamError": {
         "description": "The RDAP chain failed.",
         "content": {
-          "application/json": { "schema": { "$ref": "#/components/schemas/Error" } }
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
         }
       }
     },
     "schemas": {
       "Error": {
         "type": "object",
-        "required": ["error"],
+        "required": [
+          "error"
+        ],
         "properties": {
-          "error": { "type": "string" },
-          "message": { "type": "string" }
+          "error": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
         }
       },
       "PaymentRequirements": {
@@ -248,61 +378,182 @@
           "asset"
         ],
         "properties": {
-          "scheme": { "type": "string", "enum": ["exact"] },
+          "scheme": {
+            "type": "string",
+            "enum": [
+              "exact"
+            ]
+          },
           "network": {
             "type": "string",
-            "enum": ["base", "base-sepolia", "solana", "solana-devnet"]
+            "enum": [
+              "base",
+              "base-sepolia",
+              "solana",
+              "solana-devnet"
+            ]
           },
           "maxAmountRequired": {
             "type": "string",
             "description": "Amount in asset base units (USDC has 6 decimals)."
           },
-          "resource": { "type": "string", "format": "uri" },
-          "description": { "type": "string" },
-          "mimeType": { "type": "string" },
-          "payTo": { "type": "string" },
-          "maxTimeoutSeconds": { "type": "integer" },
-          "asset": { "type": "string", "description": "USDC contract address or SPL mint." },
-          "outputSchema": { "type": "object" },
-          "extra": { "type": "object" }
+          "resource": {
+            "type": "string",
+            "format": "uri"
+          },
+          "description": {
+            "type": "string"
+          },
+          "mimeType": {
+            "type": "string"
+          },
+          "payTo": {
+            "type": "string"
+          },
+          "maxTimeoutSeconds": {
+            "type": "integer"
+          },
+          "asset": {
+            "type": "string",
+            "description": "USDC contract address or SPL mint."
+          },
+          "outputSchema": {
+            "type": "object"
+          },
+          "extra": {
+            "type": "object"
+          }
         }
       },
       "PaymentRequiredBody": {
         "type": "object",
-        "required": ["x402Version", "accepts"],
+        "required": [
+          "x402Version",
+          "accepts"
+        ],
         "properties": {
-          "x402Version": { "type": "integer", "enum": [1] },
-          "error": { "type": "string" },
+          "x402Version": {
+            "type": "integer",
+            "enum": [
+              1
+            ]
+          },
+          "error": {
+            "type": "string"
+          },
           "accepts": {
             "type": "array",
             "minItems": 1,
-            "items": { "$ref": "#/components/schemas/PaymentRequirements" }
+            "items": {
+              "$ref": "#/components/schemas/PaymentRequirements"
+            }
           },
-          "payer": { "type": ["string", "null"] }
+          "payer": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
         }
       },
       "DomainCheck": {
         "type": "object",
-        "required": ["domain", "status", "available", "source", "checkedAt"],
+        "required": [
+          "domain",
+          "status",
+          "available",
+          "source",
+          "checkedAt"
+        ],
         "properties": {
-          "domain": { "type": "string" },
-          "status": { "type": "string", "enum": ["registered", "available", "unknown"] },
+          "domain": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "registered",
+              "available",
+              "unknown"
+            ]
+          },
           "available": {
-            "type": ["boolean", "null"],
+            "type": [
+              "boolean",
+              "null"
+            ],
             "description": "true = no registration found; false = registered; null = undetermined."
           },
-          "registrar": { "type": ["string", "null"] },
-          "registrarIanaId": { "type": ["string", "null"] },
-          "createdAt": { "type": ["string", "null"], "format": "date-time" },
-          "updatedAt": { "type": ["string", "null"], "format": "date-time" },
-          "expiresAt": { "type": ["string", "null"], "format": "date-time" },
-          "nameservers": { "type": "array", "items": { "type": "string" } },
-          "statusFlags": { "type": "array", "items": { "type": "string" } },
-          "dnssecSigned": { "type": ["boolean", "null"] },
-          "rdapServer": { "type": ["string", "null"] },
-          "source": { "type": "string", "enum": ["rdap"] },
-          "note": { "type": "string" },
-          "checkedAt": { "type": "string", "format": "date-time" }
+          "registrar": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "registrarIanaId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "createdAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "expiresAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "nameservers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "statusFlags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "dnssecSigned": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "rdapServer": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "rdap"
+            ]
+          },
+          "note": {
+            "type": "string"
+          },
+          "checkedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       }
     }
