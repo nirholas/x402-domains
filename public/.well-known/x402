@@ -1,0 +1,118 @@
+{
+  "x402Version": 1,
+  "name": "x402-domains",
+  "description": "Authoritative domain availability and expiry intel via RDAP — keyless, live, per lookup. Pay in USDC on Base or Solana; your client picks the rail.",
+  "homepage": "https://nirholas.github.io/x402-domains/",
+  "skill": "/skill.md",
+  "openapi": "/openapi.json",
+  "contact": "nichxbt@gmail.com",
+  "facilitator": "https://x402.org/facilitator",
+  "rails": [
+    {
+      "rail": "evm",
+      "network": "base-sepolia",
+      "asset": "USDC",
+      "assetAddress": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+      "payTo": "0x40252CFDF8B20Ed757D61ff157719F33Ec332402"
+    },
+    {
+      "rail": "solana",
+      "network": "solana",
+      "asset": "USDC",
+      "assetAddress": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+      "payTo": "WwwuGbqHrwF5RG89KhUbmRWEvjnRH9k5kVM5p7T3WwW"
+    }
+  ],
+  "resources": [
+    {
+      "resource": "GET /check/:domain",
+      "description": "Live RDAP lookup for one domain: availability, registrar, creation/expiry dates, nameservers, DNSSEC status",
+      "price": "$0.001",
+      "asset": "USDC",
+      "networks": ["base-sepolia", "base", "solana", "solana-devnet"],
+      "accepts": [
+        {
+          "scheme": "exact",
+          "network": "base-sepolia",
+          "asset": "USDC",
+          "payTo": "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
+          "maxAmountRequired": "1000"
+        },
+        {
+          "scheme": "exact",
+          "network": "solana",
+          "asset": "USDC",
+          "payTo": "WwwuGbqHrwF5RG89KhUbmRWEvjnRH9k5kVM5p7T3WwW",
+          "maxAmountRequired": "1000"
+        }
+      ],
+      "outputSchema": {
+        "type": "object",
+        "required": ["domain", "status", "available", "checkedAt"],
+        "properties": {
+          "domain": { "type": "string" },
+          "status": { "type": "string", "enum": ["registered", "available", "unknown"] },
+          "available": { "type": ["boolean", "null"] },
+          "registrar": { "type": ["string", "null"] },
+          "registrarIanaId": { "type": ["string", "null"] },
+          "createdAt": { "type": ["string", "null"], "format": "date-time" },
+          "updatedAt": { "type": ["string", "null"], "format": "date-time" },
+          "expiresAt": { "type": ["string", "null"], "format": "date-time" },
+          "nameservers": { "type": "array", "items": { "type": "string" } },
+          "statusFlags": { "type": "array", "items": { "type": "string" } },
+          "dnssecSigned": { "type": ["boolean", "null"] },
+          "rdapServer": { "type": ["string", "null"] },
+          "source": { "type": "string", "enum": ["rdap"] },
+          "checkedAt": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    {
+      "resource": "POST /bulk",
+      "description": "Live RDAP lookup for up to 50 domains in one paid call, with registered/available/unknown counts",
+      "price": "$0.005",
+      "asset": "USDC",
+      "networks": ["base-sepolia", "base", "solana", "solana-devnet"],
+      "accepts": [
+        {
+          "scheme": "exact",
+          "network": "base-sepolia",
+          "asset": "USDC",
+          "payTo": "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
+          "maxAmountRequired": "5000"
+        },
+        {
+          "scheme": "exact",
+          "network": "solana",
+          "asset": "USDC",
+          "payTo": "WwwuGbqHrwF5RG89KhUbmRWEvjnRH9k5kVM5p7T3WwW",
+          "maxAmountRequired": "5000"
+        }
+      ],
+      "inputSchema": {
+        "type": "object",
+        "required": ["domains"],
+        "properties": {
+          "domains": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 50,
+            "items": { "type": "string" }
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": ["count", "results", "checkedAt"],
+        "properties": {
+          "count": { "type": "integer" },
+          "registered": { "type": "integer" },
+          "available": { "type": "integer" },
+          "unknown": { "type": "integer" },
+          "results": { "type": "array", "items": { "type": "object" } },
+          "checkedAt": { "type": "string", "format": "date-time" }
+        }
+      }
+    }
+  ]
+}

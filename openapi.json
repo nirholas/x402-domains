@@ -1,0 +1,312 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "x402-domains",
+    "version": "0.1.0",
+    "summary": "Authoritative domain availability and expiry intel via RDAP, paid per lookup over x402.",
+    "description": "Live RDAP (RFC 9082/9083) domain intelligence. Paid routes speak x402: an unpaid request returns 402 with a dual-rail `accepts` array (USDC on Base and USDC on Solana) and the client picks the rail.",
+    "contact": { "name": "nirholas", "email": "nichxbt@gmail.com" },
+    "license": { "name": "Apache-2.0", "identifier": "Apache-2.0" }
+  },
+  "servers": [
+    { "url": "http://localhost:4021", "description": "local self-host" }
+  ],
+  "externalDocs": {
+    "description": "Docs and tutorial",
+    "url": "https://nirholas.github.io/x402-domains/"
+  },
+  "paths": {
+    "/": {
+      "get": {
+        "operationId": "getServiceCard",
+        "summary": "Service card (free)",
+        "responses": {
+          "200": {
+            "description": "Name, prices, payment rails and doc links.",
+            "content": { "application/json": { "schema": { "type": "object" } } }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "operationId": "getHealth",
+        "summary": "Liveness probe (free)",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "ok": { "type": "boolean" }, "uptime": { "type": "number" } }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/.well-known/x402": {
+      "get": {
+        "operationId": "getX402Manifest",
+        "summary": "x402 resource manifest (free)",
+        "responses": {
+          "200": {
+            "description": "Machine-readable listing of paid resources, prices and rails.",
+            "content": { "application/json": { "schema": { "type": "object" } } }
+          }
+        }
+      }
+    },
+    "/check/{domain}": {
+      "get": {
+        "operationId": "checkDomain",
+        "summary": "Live RDAP lookup for one domain",
+        "description": "Price $0.001 in USDC. Pay on Base or Solana — the 402 lists both rails.",
+        "parameters": [
+          {
+            "name": "domain",
+            "in": "path",
+            "required": true,
+            "description": "Registrable domain name. IDNs must be punycode.",
+            "schema": { "type": "string", "examples": ["example.com"] }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The purchased lookup.",
+            "headers": {
+              "X-PAYMENT-RESPONSE": {
+                "description": "Base64 JSON settlement receipt.",
+                "schema": { "type": "string" }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DomainCheck" },
+                "example": {
+                  "domain": "example.com",
+                  "status": "registered",
+                  "available": false,
+                  "registrar": "RESERVED-Internet Assigned Numbers Authority",
+                  "registrarIanaId": "376",
+                  "createdAt": "1995-08-14T04:00:00Z",
+                  "updatedAt": "2024-08-14T07:01:38Z",
+                  "expiresAt": "2025-08-13T04:00:00Z",
+                  "nameservers": ["a.iana-servers.net", "b.iana-servers.net"],
+                  "statusFlags": ["client delete prohibited"],
+                  "dnssecSigned": true,
+                  "rdapServer": "https://rdap.verisign.com/com/v1/domain/example.com",
+                  "source": "rdap",
+                  "checkedAt": "2026-08-07T12:00:00.000Z"
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "402": { "$ref": "#/components/responses/PaymentRequired" },
+          "502": { "$ref": "#/components/responses/UpstreamError" }
+        }
+      }
+    },
+    "/bulk": {
+      "post": {
+        "operationId": "checkDomainsBulk",
+        "summary": "Live RDAP lookup for up to 50 domains",
+        "description": "Price $0.005 in USDC. Pay on Base or Solana — the 402 lists both rails.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["domains"],
+                "properties": {
+                  "domains": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 50,
+                    "items": { "type": "string" }
+                  }
+                }
+              },
+              "example": { "domains": ["example.com", "openai.com"] }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The purchased bulk report.",
+            "headers": {
+              "X-PAYMENT-RESPONSE": {
+                "description": "Base64 JSON settlement receipt.",
+                "schema": { "type": "string" }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["count", "results", "checkedAt"],
+                  "properties": {
+                    "count": { "type": "integer" },
+                    "registered": { "type": "integer" },
+                    "available": { "type": "integer" },
+                    "unknown": { "type": "integer" },
+                    "results": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/DomainCheck" }
+                    },
+                    "checkedAt": { "type": "string", "format": "date-time" }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "402": { "$ref": "#/components/responses/PaymentRequired" },
+          "502": { "$ref": "#/components/responses/UpstreamError" }
+        }
+      }
+    }
+  },
+  "components": {
+    "responses": {
+      "PaymentRequired": {
+        "description": "Payment required. The `accepts` array lists both rails — USDC on Base and USDC on Solana. Sign one, base64 it into `X-PAYMENT`, retry.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/PaymentRequiredBody" },
+            "example": {
+              "x402Version": 1,
+              "error": "X-PAYMENT header is required",
+              "accepts": [
+                {
+                  "scheme": "exact",
+                  "network": "base-sepolia",
+                  "maxAmountRequired": "1000",
+                  "resource": "http://localhost:4021/check/example.com",
+                  "description": "Live RDAP lookup for one domain",
+                  "mimeType": "application/json",
+                  "payTo": "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
+                  "maxTimeoutSeconds": 120,
+                  "asset": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+                  "extra": { "name": "USDC", "version": "2" }
+                },
+                {
+                  "scheme": "exact",
+                  "network": "solana",
+                  "maxAmountRequired": "1000",
+                  "resource": "http://localhost:4021/check/example.com",
+                  "description": "Live RDAP lookup for one domain",
+                  "mimeType": "application/json",
+                  "payTo": "WwwuGbqHrwF5RG89KhUbmRWEvjnRH9k5kVM5p7T3WwW",
+                  "maxTimeoutSeconds": 120,
+                  "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+                  "extra": { "name": "USDC", "decimals": 6, "feePayer": "CKPKJWNdJEqa81x7CkZ14BVPiY6y16Sxs7owznqtWYp5" }
+                }
+              ],
+              "hint": "Pay in USDC on Base or Solana — your client picks the rail. See /.well-known/x402"
+            }
+          }
+        }
+      },
+      "BadRequest": {
+        "description": "Malformed input.",
+        "content": {
+          "application/json": { "schema": { "$ref": "#/components/schemas/Error" } }
+        }
+      },
+      "UpstreamError": {
+        "description": "The RDAP chain failed.",
+        "content": {
+          "application/json": { "schema": { "$ref": "#/components/schemas/Error" } }
+        }
+      }
+    },
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "required": ["error"],
+        "properties": {
+          "error": { "type": "string" },
+          "message": { "type": "string" }
+        }
+      },
+      "PaymentRequirements": {
+        "type": "object",
+        "description": "One accepted way to pay for this resource (one rail).",
+        "required": [
+          "scheme",
+          "network",
+          "maxAmountRequired",
+          "resource",
+          "description",
+          "mimeType",
+          "payTo",
+          "maxTimeoutSeconds",
+          "asset"
+        ],
+        "properties": {
+          "scheme": { "type": "string", "enum": ["exact"] },
+          "network": {
+            "type": "string",
+            "enum": ["base", "base-sepolia", "solana", "solana-devnet"]
+          },
+          "maxAmountRequired": {
+            "type": "string",
+            "description": "Amount in asset base units (USDC has 6 decimals)."
+          },
+          "resource": { "type": "string", "format": "uri" },
+          "description": { "type": "string" },
+          "mimeType": { "type": "string" },
+          "payTo": { "type": "string" },
+          "maxTimeoutSeconds": { "type": "integer" },
+          "asset": { "type": "string", "description": "USDC contract address or SPL mint." },
+          "outputSchema": { "type": "object" },
+          "extra": { "type": "object" }
+        }
+      },
+      "PaymentRequiredBody": {
+        "type": "object",
+        "required": ["x402Version", "accepts"],
+        "properties": {
+          "x402Version": { "type": "integer", "enum": [1] },
+          "error": { "type": "string" },
+          "accepts": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "$ref": "#/components/schemas/PaymentRequirements" }
+          },
+          "payer": { "type": ["string", "null"] },
+          "hint": { "type": "string" }
+        }
+      },
+      "DomainCheck": {
+        "type": "object",
+        "required": ["domain", "status", "available", "source", "checkedAt"],
+        "properties": {
+          "domain": { "type": "string" },
+          "status": { "type": "string", "enum": ["registered", "available", "unknown"] },
+          "available": {
+            "type": ["boolean", "null"],
+            "description": "true = no registration found; false = registered; null = undetermined."
+          },
+          "registrar": { "type": ["string", "null"] },
+          "registrarIanaId": { "type": ["string", "null"] },
+          "createdAt": { "type": ["string", "null"], "format": "date-time" },
+          "updatedAt": { "type": ["string", "null"], "format": "date-time" },
+          "expiresAt": { "type": ["string", "null"], "format": "date-time" },
+          "nameservers": { "type": "array", "items": { "type": "string" } },
+          "statusFlags": { "type": "array", "items": { "type": "string" } },
+          "dnssecSigned": { "type": ["boolean", "null"] },
+          "rdapServer": { "type": ["string", "null"] },
+          "source": { "type": "string", "enum": ["rdap"] },
+          "note": { "type": "string" },
+          "checkedAt": { "type": "string", "format": "date-time" }
+        }
+      }
+    }
+  }
+}

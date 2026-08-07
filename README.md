@@ -1,0 +1,138 @@
+<h1 align="center">x402-domains</h1>
+
+<p align="center">
+  <b>Authoritative domain availability and expiry intel via RDAP — keyless, live, per lookup.</b><br>
+  Pay $0.001 in USDC per domain. On Base <i>or</i> Solana. No account, no key, no subscription.
+</p>
+
+<p align="center">
+  <a href="LICENSE"><img alt="License: Apache 2.0" src="https://img.shields.io/badge/license-Apache--2.0-blue.svg"></a>
+  <a href="https://x402.org"><img alt="x402" src="https://img.shields.io/badge/protocol-x402-0052ff.svg"></a>
+  <img alt="rails" src="https://img.shields.io/badge/USDC-Base%20%2B%20Solana-2775ca.svg">
+  <a href="https://nirholas.github.io/x402-domains/"><img alt="docs" src="https://img.shields.io/badge/docs-Pages-24292f.svg"></a>
+</p>
+
+---
+
+## What you get
+
+RDAP is the IANA-standard successor to WHOIS (RFC 9082/9083). This service resolves the
+authoritative RDAP server for a TLD through the IANA bootstrap registry and queries it
+**live on every call** — no cache of stale WHOIS scrapes, no rate-limited free tier.
+
+| Route | Price | What comes back in the 200 |
+|---|---|---|
+| `GET /check/:domain` | **$0.001** | availability, registrar + IANA ID, created / updated / expiry dates, nameservers, EPP status flags, DNSSEC delegation, which RDAP server answered |
+| `POST /bulk` | **$0.005** | the same object for up to 50 domains, plus registered / available / unknown counts |
+| `GET /` · `/health` · `/skill.md` · `/.well-known/x402` · `/openapi.json` | free | discovery |
+
+Every paid route returns the purchased artifact **in the 200 body**. There is no job queue,
+no callback, nothing to poll.
+
+## Why x402 for this
+
+Domain intel is a per-question purchase: an agent checking 40 candidate names for a startup
+wants 40 answers, not a monthly plan and an API key rotation policy. x402 lets it pay
+$0.001 at the moment it asks, from a wallet it already has, with no signup, no key
+custody, and no minimum spend. The unit of commerce matches the unit of value.
+
+## Quickstart
+
+```bash
+git clone https://github.com/nirholas/x402-domains.git
+cd x402-domains
+npm install
+cp .env.example .env      # already filled with working defaults
+npm run dev               # http://localhost:4021
+```
+
+Ask without paying and you get the dual-rail challenge:
+
+```bash
+curl -i http://localhost:4021/check/example.com
+# HTTP/1.1 402 Payment Required
+# { "x402Version": 1, "accepts": [ {…base-sepolia…}, {…solana…} ] }
+```
+
+Pay and you get the data:
+
+```bash
+PRIVATE_KEY=0xyourTestnetKey npm run client
+```
+
+## How x402 works here
+
+```
+agent ──GET /check/example.com──────────────▶ server
+      ◀──402 + accepts:[ Base USDC, Solana USDC ]──
+      (client picks a rail, signs the exact amount)
+      ──GET /check/example.com + X-PAYMENT──▶ server
+                                              └─ facilitator: verify → settle
+      ◀──200 + the RDAP record + X-PAYMENT-RESPONSE──
+```
+
+The 402 is the price list. `X-PAYMENT` is the signed payment. The 200 is the goods. One
+round trip of overhead, and the agent never held an API key.
+
+## Dual-rail payment: Base **or** Solana
+
+Every 402 from this service lists **two** payment requirements — USDC on Base (EVM,
+EIP-3009 `transferWithAuthorization`) and USDC on Solana (SPL `transferChecked`). The
+paying client picks whichever chain it can sign on; the server settles either through the
+x402 facilitator and returns the same artifact.
+
+| | EVM rail | Solana rail |
+|---|---|---|
+| network | `base-sepolia` (default) / `base` | `solana` (default) / `solana-devnet` |
+| asset | USDC `0x036CbD…dCF7e` (sepolia) | USDC mint `EPjFWdd5…TDt1v` |
+| payTo | `0x40252CFDF8B20Ed757D61ff157719F33Ec332402` | `WwwuGbqHrwF5RG89KhUbmRWEvjnRH9k5kVM5p7T3WwW` |
+| client | `x402-fetch` + `viem` | any Solana x402 client, or the browser modal |
+
+Those are the suite's public receive addresses and the server runs with them out of the
+box. Set `PAY_TO_ADDRESS` / `SOLANA_PAY_TO_ADDRESS` to be paid yourself. Gas on the Solana
+rail is sponsored by the facilitator's fee payer, so a payer needs USDC only — no SOL.
+
+## Real backend / API keys
+
+**None.** RDAP is a public, keyless, authoritative protocol; there is no fixture mode in
+this repo and no `source: "fixture"` response — every number you see came from the registry
+that issued the domain. The only reason a lookup returns `status: "unknown"` is that the
+TLD's RDAP server was unreachable, rate-limited, or does not implement RDAP; the `note`
+field says which. Never read `unknown` as `available`.
+
+The one environment knob that changes data behaviour is none at all — only payment
+settings (`PAY_TO_ADDRESS`, `SOLANA_PAY_TO_ADDRESS`, `NETWORK`, `SOLANA_NETWORK`,
+`FACILITATOR_URL`) and `PORT`. See [.env.example](.env.example).
+
+## For AI agents
+
+- **[`skill.md`](skill.md)** — the agent-facing contract: endpoints, params, response
+  schemas, payment instructions, error table. Point your agent at
+  `https://your-host/skill.md` and it can use this service without any other docs.
+- **`GET /.well-known/x402`** — the machine-readable manifest: every paid resource, its
+  price, its output schema, and both rails. This is the format
+  [x402scan.com](https://x402scan.com), the **x402 Bazaar**, and
+  [agentic.market](https://agentic.market) index — deploy publicly and submit your origin
+  to get listed.
+- **MCP** — [`examples/mcp-tool.md`](examples/mcp-tool.md) wraps `/check/:domain` and
+  `/bulk` as Model Context Protocol tools so Claude can buy a lookup mid-conversation.
+- **Client** — [`examples/agent-client.ts`](examples/agent-client.ts) is the full paid flow
+  with `x402-fetch`, printing the artifact and the decoded settlement receipt.
+
+## Docs
+
+Full site: **<https://nirholas.github.io/x402-domains/>**
+
+- [Tutorial](docs/tutorial.md) — install → 402 → paid call → mainnet
+- [API reference](docs/api.md) — every field of every response
+- [For agents](docs/agents.md) — discovery, payment, listing
+
+## Support
+
+Questions, bugs, or a listing request: **nichxbt@gmail.com** or open an issue.
+
+Part of the [x402 Suite](https://github.com/nirholas/x402-suite).
+
+## License
+
+Apache-2.0 — see [LICENSE](LICENSE).
