@@ -7,7 +7,7 @@ against the TLD's own authoritative RDAP server via the IANA bootstrap registry,
 every call. No API key exists for this data and none is needed; you pay per lookup in USDC
 over x402 instead of holding a subscription.
 
-- **Base URL:** `http://localhost:4021` (self-host) — replace with your deployment's origin.
+- **Base URL:** `http://localhost:4026` (self-host) — replace with your deployment's origin.
 - **Manifest:** `GET /.well-known/x402`
 - **OpenAPI:** `GET /openapi.json`
 - **Contact:** nichxbt@gmail.com
@@ -26,10 +26,10 @@ and USDC on Solana. Your client picks whichever it can sign.**
   "accepts": [
     { "scheme": "exact", "network": "base-sepolia", "asset": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
       "payTo": "0x40252CFDF8B20Ed757D61ff157719F33Ec332402", "maxAmountRequired": "1000",
-      "resource": "http://localhost:4021/check/example.com", "mimeType": "application/json" },
+      "resource": "http://localhost:4026/check/example.com", "mimeType": "application/json" },
     { "scheme": "exact", "network": "solana", "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
       "payTo": "WwwuGbqHrwF5RG89KhUbmRWEvjnRH9k5kVM5p7T3WwW", "maxAmountRequired": "1000",
-      "resource": "http://localhost:4021/check/example.com", "mimeType": "application/json" }
+      "resource": "http://localhost:4026/check/example.com", "mimeType": "application/json" }
   ]
 }
 ```
@@ -71,9 +71,9 @@ One live RDAP lookup.
   "registrar": "RESERVED-Internet Assigned Numbers Authority",
   "registrarIanaId": "376",
   "createdAt": "1995-08-14T04:00:00Z",
-  "updatedAt": "2024-08-14T07:01:38Z",
-  "expiresAt": "2025-08-13T04:00:00Z",
-  "nameservers": ["a.iana-servers.net", "b.iana-servers.net"],
+  "updatedAt": "2026-01-16T18:26:50Z",
+  "expiresAt": "2026-08-13T04:00:00Z",
+  "nameservers": ["elliott.ns.cloudflare.com", "hera.ns.cloudflare.com"],
   "statusFlags": ["client delete prohibited", "client transfer prohibited"],
   "dnssecSigned": true,
   "rdapServer": "https://rdap.verisign.com/com/v1/domain/example.com",

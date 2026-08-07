@@ -21,7 +21,7 @@ import { baseSepolia } from "viem/chains";
 import { wrapFetchWithPayment } from "x402-fetch";
 import { z } from "zod";
 
-const BASE_URL = process.env.X402_DOMAINS_URL ?? "http://localhost:4021";
+const BASE_URL = process.env.X402_DOMAINS_URL ?? "http://localhost:4026";
 
 // One wallet, reused for every purchase. Fund it with a small USDC balance and
 // treat it as a spending budget — this is the whole point of agentic commerce.

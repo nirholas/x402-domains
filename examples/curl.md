@@ -5,14 +5,14 @@ No SDK, no wrapper — just HTTP, so you can see exactly what the protocol does.
 Start the server first:
 
 ```bash
-npm install && npm run dev     # http://localhost:4021
+npm install && npm run dev     # http://localhost:4026
 ```
 
 ## 0. Discover the service for free
 
 ```bash
-curl -s http://localhost:4021/ | jq
-curl -s http://localhost:4021/.well-known/x402 | jq '.resources[] | {resource, price}'
+curl -s http://localhost:4026/ | jq
+curl -s http://localhost:4026/.well-known/x402 | jq '.resources[] | {resource, price}'
 ```
 
 ```
@@ -23,7 +23,7 @@ curl -s http://localhost:4021/.well-known/x402 | jq '.resources[] | {resource, p
 ## 1. Ask without paying → 402 with **both** rails
 
 ```bash
-curl -i -s http://localhost:4021/check/example.com
+curl -i -s http://localhost:4026/check/example.com
 ```
 
 ```http
@@ -40,7 +40,7 @@ Content-Type: application/json
       "scheme": "exact",
       "network": "base-sepolia",
       "maxAmountRequired": "1000",                 // 1000 base units = $0.001 USDC (6 dp)
-      "resource": "http://localhost:4021/check/example.com",
+      "resource": "http://localhost:4026/check/example.com",
       "description": "Live RDAP lookup for one domain: …",
       "mimeType": "application/json",
       "payTo": "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
@@ -52,7 +52,7 @@ Content-Type: application/json
       "scheme": "exact",
       "network": "solana",
       "maxAmountRequired": "1000",
-      "resource": "http://localhost:4021/check/example.com",
+      "resource": "http://localhost:4026/check/example.com",
       "description": "Live RDAP lookup for one domain: …",
       "mimeType": "application/json",
       "payTo": "WwwuGbqHrwF5RG89KhUbmRWEvjnRH9k5kVM5p7T3WwW",
@@ -67,7 +67,7 @@ Content-Type: application/json
 Just the rails:
 
 ```bash
-curl -s http://localhost:4021/check/example.com \
+curl -s http://localhost:4026/check/example.com \
   | jq '.accepts[] | {network, asset, payTo, maxAmountRequired}'
 ```
 
@@ -118,7 +118,7 @@ PRIVATE_KEY=0xyourTestnetKey npm run client
 ## 3. Retry with the header → 200 + the artifact
 
 ```bash
-curl -i -s http://localhost:4021/check/example.com -H "X-PAYMENT: $X_PAYMENT"
+curl -i -s http://localhost:4026/check/example.com -H "X-PAYMENT: $X_PAYMENT"
 ```
 
 ```http
@@ -133,8 +133,8 @@ X-PAYMENT-RESPONSE: eyJzdWNjZXNzIjp0cnVlLCJyYWlsIjoiZXZtIiwi…
   "status": "registered",
   "available": false,
   "registrar": "RESERVED-Internet Assigned Numbers Authority",
-  "expiresAt": "2025-08-13T04:00:00Z",
-  "nameservers": ["a.iana-servers.net", "b.iana-servers.net"],
+  "expiresAt": "2026-08-13T04:00:00Z",
+  "nameservers": ["elliott.ns.cloudflare.com", "hera.ns.cloudflare.com"],
   "dnssecSigned": true,
   "source": "rdap",
   "checkedAt": "2026-08-07T12:00:00.000Z",
@@ -163,7 +163,7 @@ echo "$RESPONSE_HEADER" | base64 -d | jq
 ## 4. Bulk
 
 ```bash
-curl -s -X POST http://localhost:4021/bulk \
+curl -s -X POST http://localhost:4026/bulk \
   -H "content-type: application/json" \
   -H "X-PAYMENT: $X_PAYMENT_5000" \
   -d '{"domains":["example.com","openai.com","zz-free-9f2a1c.dev"]}' | jq '{count,registered,available,unknown}'

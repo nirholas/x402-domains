@@ -43,13 +43,13 @@ git clone https://github.com/nirholas/x402-domains.git
 cd x402-domains
 npm install
 cp .env.example .env      # already filled with working defaults
-npm run dev               # http://localhost:4021
+npm run dev               # http://localhost:4026
 ```
 
 Ask without paying and you get the dual-rail challenge:
 
 ```bash
-curl -i http://localhost:4021/check/example.com
+curl -i http://localhost:4026/check/example.com
 # HTTP/1.1 402 Payment Required
 # { "x402Version": 1, "accepts": [ {…base-sepolia…}, {…solana…} ] }
 ```

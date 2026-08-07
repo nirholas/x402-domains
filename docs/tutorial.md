@@ -31,7 +31,7 @@ Change both to your own addresses if you want the money. Everything else is comm
 and has a sane default: `base-sepolia` for the EVM rail, `solana` mainnet for the Solana
 rail, `https://x402.org/facilitator` for EVM settlement, `https://facilitator.payai.network`
 for Solana settlement (the reference x402.org facilitator only settles Base Sepolia), and
-port `4021`.
+port `4026`.
 
 There is no API key to obtain. RDAP is keyless and public — that is the whole point of
 this service.
@@ -43,7 +43,7 @@ npm run dev
 ```
 
 ```
-x402-domains listening on http://localhost:4021
+x402-domains listening on http://localhost:4026
 Payment rails (USDC — the client picks):
   evm     base-sepolia   → 0x40252CFDF8B20Ed757D61ff157719F33Ec332402  via https://x402.org/facilitator
   solana  solana         → WwwuGbqHrwF5RG89KhUbmRWEvjnRH9k5kVM5p7T3WwW  via https://facilitator.payai.network
@@ -57,14 +57,14 @@ Free routes: GET /  GET /health  GET /skill.md  GET /.well-known/x402  GET /open
 Sanity check the free routes:
 
 ```bash
-curl -s localhost:4021/health
-curl -s localhost:4021/.well-known/x402 | jq '.resources[].resource'
+curl -s localhost:4026/health
+curl -s localhost:4026/.well-known/x402 | jq '.resources[].resource'
 ```
 
 ## 4. Your first 402
 
 ```bash
-curl -i -s localhost:4021/check/example.com
+curl -i -s localhost:4026/check/example.com
 ```
 
 ```http
@@ -122,8 +122,8 @@ PRIVATE_KEY=0xyourTestnetKey npm run client
   "available": false,
   "registrar": "RESERVED-Internet Assigned Numbers Authority",
   "createdAt": "1995-08-14T04:00:00Z",
-  "expiresAt": "2025-08-13T04:00:00Z",
-  "nameservers": ["a.iana-servers.net", "b.iana-servers.net"],
+  "expiresAt": "2026-08-13T04:00:00Z",
+  "nameservers": ["elliott.ns.cloudflare.com", "hera.ns.cloudflare.com"],
   "dnssecSigned": true,
   "source": "rdap",
   "checkedAt": "2026-08-07T12:00:00.000Z"
@@ -155,7 +155,7 @@ be past `expiresAt` and still not be released.
 Fifty single checks cost $0.05. One `POST /bulk` covering the same fifty costs $0.005:
 
 ```bash
-curl -s -X POST localhost:4021/bulk \
+curl -s -X POST localhost:4026/bulk \
   -H 'content-type: application/json' \
   -H "X-PAYMENT: $PAID" \
   -d '{"domains":["example.com","openai.com","zz-free-9f2a1c.dev"]}' \

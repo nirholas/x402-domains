@@ -9,7 +9,7 @@
     "license": { "name": "Apache-2.0", "identifier": "Apache-2.0" }
   },
   "servers": [
-    { "url": "http://localhost:4021", "description": "local self-host" }
+    { "url": "http://localhost:4026", "description": "local self-host" }
   ],
   "externalDocs": {
     "description": "Docs and tutorial",
@@ -92,9 +92,9 @@
                   "registrar": "RESERVED-Internet Assigned Numbers Authority",
                   "registrarIanaId": "376",
                   "createdAt": "1995-08-14T04:00:00Z",
-                  "updatedAt": "2024-08-14T07:01:38Z",
-                  "expiresAt": "2025-08-13T04:00:00Z",
-                  "nameservers": ["a.iana-servers.net", "b.iana-servers.net"],
+                  "updatedAt": "2026-01-16T18:26:50Z",
+                  "expiresAt": "2026-08-13T04:00:00Z",
+                  "nameservers": ["elliott.ns.cloudflare.com", "hera.ns.cloudflare.com"],
                   "statusFlags": ["client delete prohibited"],
                   "dnssecSigned": true,
                   "rdapServer": "https://rdap.verisign.com/com/v1/domain/example.com",
@@ -186,7 +186,7 @@
                   "scheme": "exact",
                   "network": "base-sepolia",
                   "maxAmountRequired": "1000",
-                  "resource": "http://localhost:4021/check/example.com",
+                  "resource": "http://localhost:4026/check/example.com",
                   "description": "Live RDAP lookup for one domain",
                   "mimeType": "application/json",
                   "payTo": "0x40252CFDF8B20Ed757D61ff157719F33Ec332402",
@@ -198,7 +198,7 @@
                   "scheme": "exact",
                   "network": "solana",
                   "maxAmountRequired": "1000",
-                  "resource": "http://localhost:4021/check/example.com",
+                  "resource": "http://localhost:4026/check/example.com",
                   "description": "Live RDAP lookup for one domain",
                   "mimeType": "application/json",
                   "payTo": "WwwuGbqHrwF5RG89KhUbmRWEvjnRH9k5kVM5p7T3WwW",

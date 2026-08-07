@@ -1,6 +1,6 @@
 # API reference
 
-Base URL: `http://localhost:4021` when self-hosting. Machine-readable equivalents:
+Base URL: `http://localhost:4026` when self-hosting. Machine-readable equivalents:
 [`openapi.json`](https://github.com/nirholas/x402-domains/blob/main/openapi.json) and
 [`/.well-known/x402`](https://github.com/nirholas/x402-domains/blob/main/public/.well-known/x402).
 
@@ -55,7 +55,7 @@ When you see `unknown`, retry later or verify at the registrar — do not regist
 ### Example
 
 ```bash
-curl -s localhost:4021/check/example.com -H "X-PAYMENT: $PAID" | jq
+curl -s localhost:4026/check/example.com -H "X-PAYMENT: $PAID" | jq
 ```
 
 ```json
@@ -66,9 +66,9 @@ curl -s localhost:4021/check/example.com -H "X-PAYMENT: $PAID" | jq
   "registrar": "RESERVED-Internet Assigned Numbers Authority",
   "registrarIanaId": "376",
   "createdAt": "1995-08-14T04:00:00Z",
-  "updatedAt": "2024-08-14T07:01:38Z",
-  "expiresAt": "2025-08-13T04:00:00Z",
-  "nameservers": ["a.iana-servers.net", "b.iana-servers.net"],
+  "updatedAt": "2026-01-16T18:26:50Z",
+  "expiresAt": "2026-08-13T04:00:00Z",
+  "nameservers": ["elliott.ns.cloudflare.com", "hera.ns.cloudflare.com"],
   "statusFlags": ["client delete prohibited", "client transfer prohibited", "client update prohibited"],
   "dnssecSigned": true,
   "rdapServer": "https://rdap.verisign.com/com/v1/domain/example.com",
@@ -96,7 +96,7 @@ An unregistered name:
   "registrar": null,
   "expiresAt": null,
   "nameservers": [],
-  "rdapServer": "https://www.registry.google/rdap/domain/zz-free-9f2a1c.dev",
+  "rdapServer": "https://pubapi.registry.google/rdap/domain/zz-free-9f2a1c.dev",
   "source": "rdap",
   "note": "No registration found in the authoritative RDAP registry — the domain is likely available (registry-level reservations may still apply).",
   "checkedAt": "2026-08-07T12:00:00.000Z"
@@ -193,7 +193,7 @@ Lookups run 8 at a time.
 | `scheme` | `"exact"` | the only scheme this service accepts |
 | `network` | `"base-sepolia"` / `"solana"` | switched by `NETWORK` and `SOLANA_NETWORK` |
 | `maxAmountRequired` | `"1000"` | base units; USDC has 6 decimals, so this is $0.001 |
-| `resource` | `"http://localhost:4021/check/example.com"` | absolute URL being purchased |
+| `resource` | `"http://localhost:4026/check/example.com"` | absolute URL being purchased |
 | `description` | `"Live RDAP lookup for one domain…"` | shown by wallets and the checkout modal |
 | `mimeType` | `"application/json"` | what the 200 will be |
 | `payTo` | `0x40252CF…` / `WwwuGbqH…` | receive address for that rail |

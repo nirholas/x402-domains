@@ -84,7 +84,7 @@ The 200 body **is** the purchase. There is no job id, no webhook, nothing to pol
   "status": "registered",
   "available": false,
   "registrar": "…",
-  "expiresAt": "2025-08-13T04:00:00Z",
+  "expiresAt": "2026-08-13T04:00:00Z",
   "nameservers": ["…"],
   "dnssecSigned": true,
   "source": "rdap",
