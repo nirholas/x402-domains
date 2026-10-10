@@ -1,0 +1,28 @@
+# x402-domains
+
+> Authoritative domain availability and expiry intel via RDAP: keyless, live, per lookup. Paid per call in USDC on Base or Solana via x402.
+
+x402-domains is an open-source repository by nirholas, part of the three.ws ecosystem.
+
+## Docs
+
+- [README](https://github.com/nirholas/x402-domains/blob/HEAD/README.md): install, usage and reference
+- [What you get](https://github.com/nirholas/x402-domains/blob/HEAD/README.md#what-you-get)
+- [Why x402 for this](https://github.com/nirholas/x402-domains/blob/HEAD/README.md#why-x402-for-this)
+- [Quickstart](https://github.com/nirholas/x402-domains/blob/HEAD/README.md#quickstart)
+- [How x402 works here](https://github.com/nirholas/x402-domains/blob/HEAD/README.md#how-x402-works-here)
+- [Dual-rail payment: Base or Solana](https://github.com/nirholas/x402-domains/blob/HEAD/README.md#dual-rail-payment-base-or-solana)
+- [Real backend / API keys](https://github.com/nirholas/x402-domains/blob/HEAD/README.md#real-backend-api-keys)
+- [For AI agents](https://github.com/nirholas/x402-domains/blob/HEAD/README.md#for-ai-agents)
+- [Docs](https://github.com/nirholas/x402-domains/blob/HEAD/README.md#docs)
+- [AGENTS.md](https://github.com/nirholas/x402-domains/blob/HEAD/AGENTS.md): guidance for coding agents
+- [Full text for LLMs](https://github.com/nirholas/x402-domains/blob/HEAD/llms-full.txt): the README inlined
+
+## Project
+
+- [Source](https://github.com/nirholas/x402-domains)
+- [Issues](https://github.com/nirholas/x402-domains/issues)
+- [Discussions](https://github.com/nirholas/x402-domains/discussions)
+- [Homepage](https://nirholas.github.io/x402-domains/)
+- [three.ws](https://three.ws): the platform this is part of
+- [All repositories by nirholas](https://github.com/nirholas/nirholas#readme)
