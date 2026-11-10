@@ -1,0 +1,25 @@
+{
+  "name": "x402-domains",
+  "owner": {
+    "name": "nirholas"
+  },
+  "description": "Check domain availability, registrar and expiry live over RDAP, paid per lookup in USDC via x402.",
+  "plugins": [
+    {
+      "name": "x402-domains",
+      "source": "./plugins/x402-domains",
+      "description": "Check domain availability, registrar and expiry live over RDAP, paid per lookup in USDC via x402.",
+      "category": "data",
+      "tags": [
+        "x402",
+        "usdc",
+        "solana",
+        "base",
+        "agentic-commerce",
+        "http-402",
+        "rdap",
+        "domains"
+      ]
+    }
+  ]
+}
