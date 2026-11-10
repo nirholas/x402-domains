@@ -1,0 +1,21 @@
+{
+  "name": "x402-domains",
+  "version": "0.1.0",
+  "description": "Check domain availability, registrar and expiry live over RDAP, paid per lookup in USDC via x402.",
+  "author": {
+    "name": "nirholas"
+  },
+  "repository": "https://github.com/nirholas/x402-domains",
+  "homepage": "https://nirholas.github.io/x402-domains/",
+  "license": "Apache-2.0",
+  "keywords": [
+    "x402",
+    "usdc",
+    "solana",
+    "base",
+    "agentic-commerce",
+    "http-402",
+    "rdap",
+    "domains"
+  ]
+}
